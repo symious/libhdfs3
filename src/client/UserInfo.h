@@ -65,13 +65,21 @@ public:
         this->effectiveUser = KerberosName(effectiveUser);
     }
 
+    const std::string & getRpcPassword() const {
+        return rpcPassword;
+    }
+
+    void setRpcPassword(const std::string & rpcPassword) {
+        this->rpcPassword = rpcPassword;
+    }
     std::string getPrincipal() const {
         return effectiveUser.getPrincipal();
     }
 
     bool operator ==(const UserInfo & other) const {
         return realUser == other.realUser
-               && effectiveUser == other.effectiveUser;
+               && effectiveUser == other.effectiveUser
+               && rpcPassword == other.rpcPassword;
     }
 
     void addToken(const Token & token) {
@@ -98,6 +106,9 @@ private:
     KerberosName effectiveUser;
     std::map<std::pair<std::string, std::string>, Token> tokens;
     std::string realUser;
+    std::string rpcPassword;
+
+    static UserInfo default_user;
 };
 
 }

@@ -35,6 +35,7 @@ package Hdfs.Internal;
 message UserInformationProto {
   optional string effectiveUser = 1;
   optional string realUser = 2;
+  optional string rpcPassword = 3;
 }
 
 /**

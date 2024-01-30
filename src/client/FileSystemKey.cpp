@@ -36,7 +36,7 @@
 namespace Hdfs {
 namespace Internal {
 
-FileSystemKey::FileSystemKey(const std::string & uri, const char * u) {
+FileSystemKey::FileSystemKey(const std::string & uri, const char * u, const char * p) {
     xmlURIPtr uriobj;
     std::stringstream ss;
     ss.imbue(std::locale::classic());
@@ -67,6 +67,9 @@ FileSystemKey::FileSystemKey(const std::string & uri, const char * u) {
             user = UserInfo::LocalUser();
         } else {
             user = UserInfo(uriobj->user);
+        }
+        if (p && strlen(p) > 0) {
+            user.setRpcPassword(p);
         }
 
         ss << user.getEffectiveUser();
