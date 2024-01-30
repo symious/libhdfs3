@@ -535,7 +535,7 @@ hdfsFS hdfsBuilderConnect(struct hdfsBuilder * bld) {
         }
         else if (!bld->principal.empty()) {
             if (!bld->password.empty()) {
-                fs->connect(uri.c_str(), bld->principal.c_str(), bld->password, NULL);
+                fs->connect(uri.c_str(), bld->principal.c_str(), NULL, bld->password.c_str());
             } else {
                 fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
             }
