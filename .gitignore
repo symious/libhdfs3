@@ -2,3 +2,5 @@ build/
 Makefile.global
 /.cache
 /.vscode
+.idea
+cmake-build-debug

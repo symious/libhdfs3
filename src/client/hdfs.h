@@ -107,6 +107,18 @@ int hdfsFileIsOpenForWrite(hdfsFile file);
 hdfsFS hdfsConnectAsUser(const char * nn, tPort port, const char * user);
 
 /**
+ * hdfsConnectAsUser - Connect to a hdfs file system as a specific user
+ * Connect to the hdfs.
+ * @param nn   The NameNode.  See hdfsBuilderSetNameNode for details.
+ * @param port The port on which the server is listening.
+ * @param user the user name (this is hadoop domain user). Or NULL is equivelant to hhdfsConnect(host, port)
+ * @param passwd the RPC password (this is hadoop domain user). Or NULL is equivelant to hhdfsConnect(host, port, user)
+ * @return Returns a handle to the filesystem or NULL on error.
+ * @deprecated Use hdfsBuilderConnect instead.
+ */
+hdfsFS hdfsConnectAsUserWithPassword(const char * nn, tPort port, const char * user, const char * passwd);
+
+/**
  * hdfsConnect - Connect to a hdfs file system.
  * Connect to the hdfs.
  * @param nn   The NameNode.  See hdfsBuilderSetNameNode for details.
@@ -129,6 +141,21 @@ hdfsFS hdfsConnect(const char * nn, tPort port);
  */
 hdfsFS hdfsConnectAsUserNewInstance(const char * nn, tPort port,
                                     const char * user);
+
+/**
+ * hdfsConnect - Connect to an hdfs file system.
+ *
+ * Forces a new instance to be created
+ *
+ * @param nn     The NameNode.  See hdfsBuilderSetNameNode for details.
+ * @param port   The port on which the server is listening.
+ * @param user   The user name to use when connecting
+ * @param passwd The RPC password to use when connecting
+ * @return       Returns a handle to the filesystem or NULL on error.
+ * @deprecated   Use hdfsBuilderConnect instead.
+ */
+hdfsFS hdfsConnectAsUserWithPasswordNewInstance(const char * nn, tPort port,
+                                    const char * user, const char * passwd);
 
 /**
  * hdfsConnect - Connect to an hdfs file system.
@@ -208,6 +235,14 @@ void hdfsBuilderSetNameNodePort(struct hdfsBuilder * bld, tPort port);
  * @param userName The user name.  The string will be shallow-copied.
  */
 void hdfsBuilderSetUserName(struct hdfsBuilder * bld, const char * userName);
+
+/**
+ * Set the password to use when connecting to the HDFS cluster.
+ *
+ * @param bld The HDFS builder
+ * @param password The password.  The string will be shallow-copied.
+ */
+void hdfsBuilderSetPassword(struct hdfsBuilder * bld, const char * password);
 
 /**
  * Set the Kerberos principal to use when connecting to the HDFS cluster.

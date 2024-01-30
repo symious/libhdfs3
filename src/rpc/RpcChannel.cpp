@@ -659,10 +659,14 @@ void RpcChannelImpl::buildConnectionContext(
     connectionContext.set_protocol(key.getProtocol().getProtocol());
     std::string euser = key.getAuth().getUser().getPrincipal();
     std::string ruser = key.getAuth().getUser().getRealUser();
+    std::string passwd = key.getAuth().getUser().getRpcPassword();
 
     if (auth.getMethod() != AuthMethod::TOKEN) {
         UserInformationProto * user = connectionContext.mutable_userinfo();
         user->set_effectiveuser(euser);
+        if (!passwd.empty()) {
+            user->set_rpcpassword(passwd);
+        }
 
         if (auth.getMethod() != AuthMethod::SIMPLE) {
             if (!ruser.empty() && ruser != euser) {

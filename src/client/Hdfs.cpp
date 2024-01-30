@@ -239,6 +239,7 @@ public:
     std::string nn;
     std::string userName;
     std::string principal;
+    std::string password;
     tPort port;
 };
 
@@ -360,6 +361,27 @@ hdfsFS hdfsConnectAsUser(const char * host, tPort port, const char * user) {
     return retVal;
 }
 
+hdfsFS hdfsConnectAsUserWithPassword(const char * host, tPort port,
+                                     const char * user, const char * passwd) {
+    hdfsFS retVal = NULL;
+    PARAMETER_ASSERT(host != NULL && strlen(host) > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(port > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(user != NULL && strlen(user) > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(passwd != NULL && strlen(passwd) > 0, NULL, EINVAL);
+    struct hdfsBuilder * bld = hdfsNewBuilder();
+
+    if (!bld)
+        return NULL;
+
+    hdfsBuilderSetNameNode(bld, host);
+    hdfsBuilderSetNameNodePort(bld, port);
+    hdfsBuilderSetUserName(bld, user);
+    hdfsBuilderSetPassword(bld, passwd);
+    retVal = hdfsBuilderConnect(bld);
+    hdfsFreeBuilder(bld);
+    return retVal;
+}
+
 hdfsFS hdfsConnect(const char * host, tPort port) {
     hdfsFS retVal = NULL;
     PARAMETER_ASSERT(host != NULL && strlen(host) > 0, NULL, EINVAL);
@@ -391,6 +413,29 @@ hdfsFS hdfsConnectAsUserNewInstance(const char * host, tPort port,
     hdfsBuilderSetNameNodePort(bld, port);
     hdfsBuilderSetForceNewInstance(bld);
     hdfsBuilderSetUserName(bld, user);
+    retVal = hdfsBuilderConnect(bld);
+    hdfsFreeBuilder(bld);
+    return retVal;
+}
+
+hdfsFS hdfsConnectAsUserWithPasswordNewInstance(const char * host, tPort port,
+                                                const char * user,
+                                                const char * passwd) {
+    hdfsFS retVal = NULL;
+    PARAMETER_ASSERT(host != NULL && strlen(host) > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(port > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(user != NULL && strlen(user) > 0, NULL, EINVAL);
+    PARAMETER_ASSERT(passwd != NULL && strlen(passwd) > 0, NULL, EINVAL);
+    struct hdfsBuilder * bld = hdfsNewBuilder();
+
+    if (!bld)
+        return NULL;
+
+    hdfsBuilderSetNameNode(bld, host);
+    hdfsBuilderSetNameNodePort(bld, port);
+    hdfsBuilderSetForceNewInstance(bld);
+    hdfsBuilderSetUserName(bld, user);
+    hdfsBuilderSetPassword(bld, passwd);
     retVal = hdfsBuilderConnect(bld);
     hdfsFreeBuilder(bld);
     return retVal;
@@ -492,6 +537,12 @@ hdfsFS hdfsBuilderConnect(struct hdfsBuilder * bld) {
         }
         else if (!bld->principal.empty()) {
             fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
+        } else if (!bld->userName.empty()) {
+            if (!bld->password.empty()) {
+                fs->connect(uri.c_str(), bld->userName.c_str(), NULL, bld->password.c_str());
+            } else {
+                fs->connect(uri.c_str(), bld->userName.c_str(), NULL);
+            }
         } else {
             fs->connect(uri.c_str());
         }
@@ -545,6 +596,11 @@ void hdfsBuilderSetNameNodePort(struct hdfsBuilder * bld, tPort port) {
 void hdfsBuilderSetUserName(struct hdfsBuilder * bld, const char * userName) {
     assert(bld && userName && strlen(userName) > 0);
     bld->userName = userName;
+}
+
+void hdfsBuilderSetPassword(struct hdfsBuilder * bld, const char * password) {
+    assert(bld && password && strlen(password) > 0);
+    bld->password = password;
 }
 
 void hdfsBuilderSetPrincipal(struct hdfsBuilder * bld, const char * principal) {

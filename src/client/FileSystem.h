@@ -120,6 +120,17 @@ public:
     void connect(const char * uri, const char * username, const char * token);
 
     /**
+     * Connect to hdfs with user or token
+     * 	username and token cannot be set at the same time
+     * @param uri connection uri.
+     * @param username user used to connect to hdfs
+     * @param token token used to connect to hdfs
+     * @param password password used to connect to hdfs
+     */
+    void connect(const char * uri, const char * username, const char * token,
+                 const char * password);
+
+    /**
      * disconnect from hdfs
      */
     void disconnect();

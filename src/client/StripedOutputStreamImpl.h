@@ -28,6 +28,7 @@
 #include "ByteBuffer.h"
 #include "ThreadPool.h"
 #include "RawErasureEncoder.h"
+#include <set>
 
 namespace Hdfs {
 namespace Internal {

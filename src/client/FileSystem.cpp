@@ -208,16 +208,17 @@ void FileSystem::connect() {
  * @param uri hdfs connection uri, hdfs://host:port
  */
 void FileSystem::connect(const char * uri) {
-    connect(uri, NULL, NULL);
+    connect(uri, NULL, NULL, NULL);
 }
 
 static FileSystemWrapper * ConnectInternal(const char * uri,
-        const std::string & principal, const Token * token, Config & conf) {
+        const std::string & principal, const Token * token,
+        const std::string & password, Config & conf) {
     if (NULL == uri || 0 == strlen(uri)) {
         THROW(InvalidParameter, "Invalid HDFS uri.");
     }
 
-    FileSystemKey key(uri, principal.c_str());
+    FileSystemKey key(uri, principal.c_str(), password.c_str());
 
     if (token) {
         key.addToken(*token);
@@ -234,8 +235,22 @@ static FileSystemWrapper * ConnectInternal(const char * uri,
  * @param token token used to connect to hdfs
  */
 void FileSystem::connect(const char * uri, const char * username, const char * token) {
+    connect(uri, username, token, NULL);
+}
+
+/**
+ * Connect to hdfs with user or token
+ * 	username and token cannot be set at the same time
+ * @param uri connection uri.
+ * @param username user used to connect to hdfs
+ * @param token token used to connect to hdfs
+ * @param password password used to connect to hdfs
+ */
+void FileSystem::connect(const char * uri, const char * username, const char * token,
+                         const char * password) {
     AuthMethod auth;
     std::string principal;
+    std::string passwd;
 
     if (impl) {
         THROW(HdfsIOException, "FileSystem: already connected.");
@@ -249,11 +264,14 @@ void FileSystem::connect(const char * uri, const char * username, const char * t
             Token t;
             t.fromString(token);
             principal = ExtractPrincipalFromToken(t);
-            impl = ConnectInternal(uri, principal, &t, conf);
+            impl = ConnectInternal(uri, principal, &t, NULL, conf);
             impl->filesystem->connect();
             return;
         } else if (username) {
             principal = username;
+            if (password) {
+                passwd = password;
+            }
         }
 
         if (auth == AuthMethod::KERBEROS) {
@@ -281,7 +299,7 @@ void FileSystem::connect(const char * uri, const char * username, const char * t
 #endif
         }
 
-        impl = ConnectInternal(uri, principal, NULL, conf);
+        impl = ConnectInternal(uri, principal, NULL, passwd, conf);
         impl->filesystem->connect();
     } catch (...) {
         delete impl;
