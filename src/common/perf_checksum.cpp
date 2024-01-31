@@ -6,7 +6,6 @@
 
 #include "HWCrc32c.h"
 #include "SWCrc32c.h"
-#include "IntelAsmCrc32c.h"
 
 using namespace Hdfs::Internal;
 
@@ -36,7 +35,6 @@ int main()
     std::map<std::string, std::shared_ptr<Checksum>> checksums = {
 #if defined(__SSE4_2__) && defined(__LP64__)
         {"HWCrc32c", std::make_shared<HWCrc32c>()},
-        {"IntelAsmCrc32c", std::make_shared<IntelAsmCrc32c>()},
 #endif
         {"SWCrc32c", std::make_shared<SWCrc32c>()},
     };

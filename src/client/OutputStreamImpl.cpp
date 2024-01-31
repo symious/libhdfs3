@@ -38,7 +38,7 @@
 #include "Packet.h"
 #include "PacketHeader.h"
 #include "SWCrc32c.h"
-#include "IntelAsmCrc32c.h"
+//#include "IntelAsmCrc32c.h"
 
 #include <cassert>
 #include <memory>
@@ -52,9 +52,9 @@ OutputStreamImpl::OutputStreamImpl() :
         0), chunksPerPacket(0), closeTimeout(0), heartBeatInterval(0), packetSize(0), position(
             0), replication(0), blockSize(0), bytesWritten(0), cursor(0), lastFlushed(
                 0), nextSeqNo(0) {
-#if defined(__SSE4_2__) && defined(__LP64__)
-    checksum = std::make_shared<IntelAsmCrc32c>();
-#else
+//#if defined(__SSE4_2__) && defined(__LP64__)
+//    checksum = std::make_shared<IntelAsmCrc32c>();
+//#else
 #if !(((defined(__PPC64__) || defined(__powerpc64__)) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)) || (defined(__s390x__)))
     if (HWCrc32c::available()) {
         checksum = shared_ptr < Checksum > (new HWCrc32c());
@@ -63,7 +63,7 @@ OutputStreamImpl::OutputStreamImpl() :
     {
         checksum = shared_ptr < Checksum > (new SWCrc32c());
     }
-#endif
+//#endif
 
     checksumSize = sizeof(int32_t);
     lastSend = steady_clock::now();
