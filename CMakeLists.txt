@@ -4,6 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 PROJECT(libhdfs3)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON CACHE STRING "Verbose build." FORCE)
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 IF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     MESSAGE(FATAL_ERROR "cannot build the project in the source directory! Out-of-source build is enforced!")

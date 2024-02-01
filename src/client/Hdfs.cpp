@@ -534,10 +534,12 @@ hdfsFS hdfsBuilderConnect(struct hdfsBuilder * bld) {
             fs->connect(uri.c_str(), NULL, bld->token.c_str());
         }
         else if (!bld->principal.empty()) {
+            fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
+        } else if (!bld->userName.empty()) {
             if (!bld->password.empty()) {
-                fs->connect(uri.c_str(), bld->principal.c_str(), NULL, bld->password.c_str());
+                fs->connect(uri.c_str(), bld->userName.c_str(), NULL, bld->password.c_str());
             } else {
-                fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
+                fs->connect(uri.c_str(), bld->userName.c_str(), NULL);
             }
         } else {
             fs->connect(uri.c_str());

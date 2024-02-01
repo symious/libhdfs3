@@ -234,7 +234,7 @@ static FileSystemWrapper * ConnectInternal(const char * uri,
  * @param token token used to connect to hdfs
  */
 void FileSystem::connect(const char * uri, const char * username, const char * token) {
-    connect(uri, NULL, NULL, NULL);
+    connect(uri, username, token, NULL);
 }
 
 /**
