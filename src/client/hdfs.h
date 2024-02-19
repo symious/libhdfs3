@@ -70,6 +70,8 @@ typedef struct HdfsFileInternalWrapper * hdfsFile;
 
 struct hdfsBuilder;
 
+extern const char* SDI_CREDENTIAL_ENV_VAR;
+
 /**
  * Return error information of last failed operation.
  *

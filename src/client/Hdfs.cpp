@@ -58,6 +58,8 @@ extern "C" {
 #define ERROR_MESSAGE_BUFFER_SIZE 4096
 #endif
 
+const char* SDI_CREDENTIAL_ENV_VAR = "HADOOP_USER_RPCPASSWORD";
+
 static THREAD_LOCAL char ErrorMessage[ERROR_MESSAGE_BUFFER_SIZE] = "Success";
 
 static void SetLastException(Hdfs::exception_ptr e) {
@@ -538,6 +540,12 @@ hdfsFS hdfsBuilderConnect(struct hdfsBuilder * bld) {
         else if (!bld->principal.empty()) {
             fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
         } else if (!bld->userName.empty()) {
+            if (bld->password.empty()) {
+                const char* env_var = std::getenv(SDI_CREDENTIAL_ENV_VAR);
+                if (env_var != nullptr &&  env_var[0] == '\0') {
+                    hdfsBuilderSetPassword(bld, env_var);
+                }
+            }
             if (!bld->password.empty()) {
                 fs->connect(uri.c_str(), bld->userName.c_str(), NULL, bld->password.c_str());
             } else {
