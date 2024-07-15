@@ -534,25 +534,30 @@ hdfsFS hdfsBuilderConnect(struct hdfsBuilder * bld) {
     try {
         fs = new FileSystem(*bld->conf);
 
+        if (bld->password.empty()) {
+            const char* env_var = std::getenv(SDI_CREDENTIAL_ENV_VAR);
+            if (env_var != nullptr &&  env_var[0] == '\0') {
+                hdfsBuilderSetPassword(bld, env_var);
+            }
+        }
+
         if (!bld->token.empty()) {
             fs->connect(uri.c_str(), NULL, bld->token.c_str());
         }
         else if (!bld->principal.empty()) {
             fs->connect(uri.c_str(), bld->principal.c_str(), NULL);
         } else if (!bld->userName.empty()) {
-            if (bld->password.empty()) {
-                const char* env_var = std::getenv(SDI_CREDENTIAL_ENV_VAR);
-                if (env_var != nullptr &&  env_var[0] == '\0') {
-                    hdfsBuilderSetPassword(bld, env_var);
-                }
-            }
             if (!bld->password.empty()) {
                 fs->connect(uri.c_str(), bld->userName.c_str(), NULL, bld->password.c_str());
             } else {
                 fs->connect(uri.c_str(), bld->userName.c_str(), NULL);
             }
         } else {
-            fs->connect(uri.c_str());
+            if (!bld->password.empty()) {
+                fs->connect(uri.c_str(), NULL, NULL, bld->password.c_str());
+            } else {
+                fs->connect(uri.c_str());
+            }
         }
 
         return new HdfsFileSystemInternalWrapper(fs);

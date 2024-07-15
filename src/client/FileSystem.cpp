@@ -269,9 +269,9 @@ void FileSystem::connect(const char * uri, const char * username, const char * t
             return;
         } else if (username) {
             principal = username;
-            if (password) {
-                passwd = password;
-            }
+        }
+        if (password) {
+            passwd = password;
         }
 
         if (auth == AuthMethod::KERBEROS) {
